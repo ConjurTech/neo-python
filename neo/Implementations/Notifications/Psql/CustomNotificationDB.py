@@ -6,8 +6,7 @@ from neo.Settings import settings
 from neo.Core.Blockchain import Blockchain
 from neo.Core.Helper import Helper
 from neocore.UInt160 import UInt160
-import json
-import pdb
+from custom_database import CustomDatabase
 
 
 class NotificationPrefix():
@@ -66,6 +65,9 @@ class CustomNotificationDb():
         @events.on(SmartContractEvent.RUNTIME_NOTIFY)
         def call_on_event(sc_event: NotifyEvent):
             print('theres an event!!!!!!')
+            print(sc_event)
+            cd = CustomDatabase()
+            cd.write_event_to_psql(sc_event)
             self.on_smart_contract_event(sc_event)
 #            elif sc_event.notify_type == NotifyType.TRANSFER and sc_event.test_mode:
 #                data = sc_event.ToByteArray()
@@ -98,47 +100,6 @@ class CustomNotificationDb():
                 print(evt)
                 print('EVENT END')
 
-            #     # write the event for both or one of the addresses involved in the transfer
-            #     write_both = True
-            #     hash_data = evt.ToByteArray()
-            #
-            #     bytes_to = bytes(evt.addr_to.Data)
-            #     bytes_from = bytes(evt.addr_from.Data)
-            #
-            #     if bytes_to == bytes_from:
-            #         write_both = False
-            #
-            #     total_bytes_to = addr_db.get(bytes_to + NotificationPrefix.PREFIX_COUNT)
-            #     total_bytes_from = addr_db.get(bytes_from + NotificationPrefix.PREFIX_COUNT)
-            #
-            #     if not total_bytes_to:
-            #         total_bytes_to = b'\x00'
-            #
-            #     if not total_bytes_from:
-            #         total_bytes_from = b'x\00'
-            #
-            #     addr_to_key = bytes_to + total_bytes_to
-            #     addr_from_key = bytes_from + total_bytes_from
-            #
-            #     with addr_db.write_batch() as b:
-            #         b.put(addr_to_key, hash_data)
-            #         if write_both:
-            #             b.put(addr_from_key, hash_data)
-            #         total_bytes_to = int.from_bytes(total_bytes_to, 'little') + 1
-            #         total_bytes_from = int.from_bytes(total_bytes_from, 'little') + 1
-            #         new_bytes_to = total_bytes_to.to_bytes(4, 'little')
-            #         new_bytes_from = total_bytes_from.to_bytes(4, 'little')
-            #         b.put(bytes_to + NotificationPrefix.PREFIX_COUNT, new_bytes_to)
-            #         if write_both:
-            #             b.put(bytes_from + NotificationPrefix.PREFIX_COUNT, new_bytes_from)
-            #
-            #     # write the event to the per-block database
-            #     per_block_key = block_bytes + block_count.to_bytes(4, 'little')
-            #     block_write_batch.put(per_block_key, hash_data)
-            #     block_count += 1
-            #
-            # # finish off the per-block write batch
-            # block_write_batch.write()
 
         self._events_to_write = []
 

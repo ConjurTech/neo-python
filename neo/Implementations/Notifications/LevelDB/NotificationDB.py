@@ -91,7 +91,8 @@ class NotificationDB():
             block_bytes = self._events_to_write[0].block_number.to_bytes(4, 'little')
 
             for evt in self._events_to_write:  # type:NotifyEvent
-
+                print('EVENT!!!!')
+                print(evt)
                 # write the event for both or one of the addresses involved in the transfer
                 write_both = True
                 hash_data = evt.ToByteArray()

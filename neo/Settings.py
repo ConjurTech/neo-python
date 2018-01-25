@@ -84,7 +84,6 @@ class SettingsHolder:
 
     # Setup methods
     def setup(self, config_file):
-        print('run fuk')
         """ Load settings from a JSON config file """
         with io.open(config_file, 'r', encoding='utf-8-sig') as data_file:
             data = json.load(data_file)
