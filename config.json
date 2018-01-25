@@ -1,0 +1,16 @@
+﻿{
+  "ApplicationConfiguration": {
+    "DataDirectoryPath": "ChainTestNet",
+    "CertCachePath": "Certs",
+    "NodePort": 20333,
+    "WsPort": 20334,
+    "UriPrefix": [ "http://*:20332" ],
+    "SslCert": "",
+    "SslCertPassword": "",
+    "Urls": {
+      "AddressUrl": "http://testnet.antcha.in/address/info/{0}",
+      "AssetUrl": "http://testnet.antcha.in/tokens/hash/{0}",
+      "TransactionUrl": "http://testnet.antcha.in/tx/hash/{0}"
+    }
+  }
+}

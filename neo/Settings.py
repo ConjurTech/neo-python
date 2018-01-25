@@ -9,6 +9,7 @@ reconfigure them by calling the `setup(..)` methods.
 import json
 import os
 import logging
+import io
 from json.decoder import JSONDecodeError
 from neocore.Cryptography import Helper
 
@@ -83,8 +84,9 @@ class SettingsHolder:
 
     # Setup methods
     def setup(self, config_file):
+        print('run fuk')
         """ Load settings from a JSON config file """
-        with open(config_file) as data_file:
+        with io.open(config_file, 'r', encoding='utf-8-sig') as data_file:
             data = json.load(data_file)
 
         config = data['ProtocolConfiguration']
@@ -92,6 +94,7 @@ class SettingsHolder:
         self.ADDRESS_VERSION = config['AddressVersion']
         self.STANDBY_VALIDATORS = config['StandbyValidators']
         self.SEED_LIST = config['SeedList']
+        print(self.SEED_LIST)
         self.RPC_LIST = config['RPCList']
 
         fees = config['SystemFee']
