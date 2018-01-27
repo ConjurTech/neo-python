@@ -4,7 +4,6 @@ import copy
 import binascii
 import os
 
-
 class CustomDatabase(object):
 
     def write_event_to_psql(self, event):
@@ -52,19 +51,22 @@ class CustomDatabase(object):
         conn.close()
 
     def parse_bytes(self, bytes):
-        if len(str(bytes)) <= 4:
-            print('int')
-            print(bytes)
+        print('parsing')
+        print(bytes)
+        print(len(bytes))
+        if isinstance(bytes, int):
+            return bytes
+        if len(str(bytes)) <= 8:
+            print('parsing int')
+            print(int.from_bytes(bytes, byteorder='little'))
             return int.from_bytes(bytes, byteorder='little')
-        elif len(str(bytes)) >= 40:
-            print('hex')
-            print(bytes)
+        else:
+            print('parsing hex')
             hex = binascii.hexlify(bytes)
             ba = bytearray(hex)
             ba.reverse()
+            print(str(ba, 'utf-8'))
             return str(ba, 'utf-8')
-        else:
-            return bytes
 
 
 
