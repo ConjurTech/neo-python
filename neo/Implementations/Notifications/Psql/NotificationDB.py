@@ -87,9 +87,16 @@ class NotificationDB():
                 print('THERES AN EVENT!!!')
                 print(evt)
                 evt.ParsePayload()
-                self.write_event_to_psql(evt)
+                if self.within_script_hash_list(evt.contract_hash):
+                    self.write_event_to_psql(evt)
 
         self._events_to_write = []
+
+    def within_script_hash_list(self, contract_hash):
+        for hash in os.environ['NEO_PYTHON_SCRIPT_HASHES']:
+            if hash == contract_hash:
+                return True
+        return False
 
     def write_event_to_psql(self, event):
         print('WRITING TO PSQL')
