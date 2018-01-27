@@ -21,6 +21,11 @@ class CustomDatabase(object):
         execution_success = event.execution_success
         test_mode = event.test_mode
 
+        data = {'event_payload': event_payload,
+                'execution_success': execution_success,
+                'test_mode': test_mode}
+
+        # Connect to psql
         try:
             # conn = psycopg2.connect("dbname="+ neonode + " user=" + myuser + " password=" + mypass + " host=" + localhost")
             conn = psycopg2.connect("dbname=" + os.environ['NEO_PYTHON_DBNAME'] +
@@ -31,21 +36,22 @@ class CustomDatabase(object):
             print('failed to connect')
             print("Error: " + str(ex))
 
-        print(conn)
         cur = conn.cursor()
+
         # cur.execute("CREATE TABLE events (id serial PRIMARY KEY, block_number varchar, transaction_hash varchar, contract_hash varchar, event_type varchar, data jsonb);")
-        data = {'event_payload': event_payload,
-                'execution_success': execution_success,
-                'test_mode': test_mode}
+
         print('DATA')
         print(data)
         print(str(block_number))
         print(str(tx_hash))
         print(str(contract_hash))
+
         cur.execute("INSERT INTO events (block_number, transaction_hash, contract_hash, event_type, data) VALUES (%s, %s, %s, %s, %s)",
                     (str(block_number), str(tx_hash), str(contract_hash), event_type, json.dumps(data)))
-        cur.execute("SELECT * FROM events;")
-        print(cur.fetchall())
+
+        # cur.execute("SELECT * FROM events;")
+        # print(cur.fetchall())
+
         conn.commit()
         cur.close()
         conn.close()
@@ -53,20 +59,25 @@ class CustomDatabase(object):
     def parse_bytes(self, bytes):
         print('parsing')
         print(bytes)
-        print(len(bytes))
-        if isinstance(bytes, int):
+        try:
+            print(len(bytes))
+            if isinstance(bytes, int):
+                return bytes
+            if len(str(bytes)) <= 8:
+                print('parse to int')
+                print(int.from_bytes(bytes, byteorder='little'))
+                return int.from_bytes(bytes, byteorder='little')
+            else:
+                print('parse to hex')
+                hex = binascii.hexlify(bytes)
+                ba = bytearray(hex)
+                ba.reverse()
+                print(str(ba, 'utf-8'))
+                return str(ba, 'utf-8')
+        except Exception as ex:
+            print('parse error')
+            print("Error: " + str(ex))
             return bytes
-        if len(str(bytes)) <= 8:
-            print('parsing int')
-            print(int.from_bytes(bytes, byteorder='little'))
-            return int.from_bytes(bytes, byteorder='little')
-        else:
-            print('parsing hex')
-            hex = binascii.hexlify(bytes)
-            ba = bytearray(hex)
-            ba.reverse()
-            print(str(ba, 'utf-8'))
-            return str(ba, 'utf-8')
 
 
 
