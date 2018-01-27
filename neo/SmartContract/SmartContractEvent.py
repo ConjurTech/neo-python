@@ -9,6 +9,7 @@ from neo.IO.MemoryStream import StreamManager
 from neocore.IO.Mixins import SerializableMixin
 import json
 import pdb
+import binascii
 from logzero import logger
 
 
@@ -85,6 +86,32 @@ class SmartContractEvent(SerializableMixin):
 
     def DeserializePayload(self, reader):
         pass
+
+    def ParsePayload(self):
+        self.event_payload = [self.event_payload[0]] + list(map(lambda x: self.parse_bytes(x), self.event_payload[1:]))
+
+    def parse_bytes(self, bytes):
+        print('parsing')
+        print(bytes)
+        try:
+            print(len(bytes))
+            if isinstance(bytes, int):
+                return bytes
+            if len(str(bytes)) <= 8:
+                print('parse to int')
+                print(int.from_bytes(bytes, byteorder='little'))
+                return int.from_bytes(bytes, byteorder='little')
+            else:
+                print('parse to hex')
+                hex = binascii.hexlify(bytes)
+                ba = bytearray(hex)
+                ba.reverse()
+                print(str(ba, 'utf-8'))
+                return str(ba, 'utf-8')
+        except Exception as ex:
+            print('parse error')
+            print("Error: " + str(ex))
+            return bytes
 
     def __str__(self):
         return "SmartContractEvent(event_type=%s, event_payload=%s, contract_hash=%s, block_number=%s, tx_hash=%s, execution_success=%s, test_mode=%s)" \

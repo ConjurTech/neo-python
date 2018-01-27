@@ -9,7 +9,7 @@ from neo.Network.NodeLeader import NodeLeader
 from neo.Core.Blockchain import Blockchain
 from neo.Implementations.Blockchains.LevelDB.LevelDBBlockchain import LevelDBBlockchain
 from neo.Settings import settings
-from neo.Implementations.Notifications.Psql.CustomNotificationDB import CustomNotificationDb
+from neo.Implementations.Notifications.Psql.NotificationDB import NotificationDB
 
 # Create am absolute references to the project root folder. Used for
 # specifying the various filenames.
@@ -32,9 +32,9 @@ def main():
     dbloop = task.LoopingCall(Blockchain.Default().PersistBlocks)
     dbloop.start(.1)
 
-    # Subscribe to notifications
-    if CustomNotificationDb.instance():
-        CustomNotificationDb.instance().start()
+    # Try to set up a notification db
+    if NotificationDB.instance():
+        NotificationDB.instance().start()
 
     NodeLeader.Instance().Start()
     reactor.run()

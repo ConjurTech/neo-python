@@ -29,7 +29,7 @@
   },
 
   "ApplicationConfiguration": {
-    "DataDirectoryPath": "ChainTestNet",
+    "DataDirectoryPath": "Chains/ChainTestNet",
     "NotificationDataPath": "Chains/Test_Notif",
     "CertCachePath": "Certs",
     "NodePort": 20333,
