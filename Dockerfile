@@ -8,4 +8,6 @@ WORKDIR neo-python
 
 RUN pip3 install -r requirements.txt
 
+RUN pip3 install psycopg2
+
 CMD python3 eventsManager.py
