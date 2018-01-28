@@ -94,9 +94,9 @@ class SmartContractEvent(SerializableMixin):
         print('parsing')
         print(bytes)
         try:
-            print(len(bytes))
             if isinstance(bytes, int):
                 return bytes
+            print(len(bytes))
             if len(str(bytes)) <= 8:
                 print('parse to int')
                 print(int.from_bytes(bytes, byteorder='little'))
