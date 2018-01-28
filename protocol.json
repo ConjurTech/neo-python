@@ -15,10 +15,10 @@
       "128.199.111.185:20336"
     ],
     "RPCList":[
-      "http://128.199.111.185:20332",
-      "http://128.199.111.185:20332",
-      "http:/128.199.111.185:20332",
-      "http://128.199.111.185:20332"
+      "http://128.199.111.185:30333",
+      "http://128.199.111.185:30334",
+      "http://128.199.111.185:30335",
+      "http://128.199.111.185:30336"
     ],
     "SystemFee": {
       "EnrollmentTransaction": 1000,
@@ -27,7 +27,6 @@
       "RegisterTransaction": 10000
     }
   },
-
   "ApplicationConfiguration": {
     "DataDirectoryPath": "Chains/ChainTestNet",
     "NotificationDataPath": "Chains/Test_Notif",
