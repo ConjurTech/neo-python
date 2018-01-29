@@ -17,7 +17,7 @@ dir_current = os.path.dirname(os.path.abspath(__file__))
 DIR_PROJECT_ROOT = os.path.abspath(os.path.join(dir_current))
 
 # The protocol json file
-SETTINGS_FILE = os.path.join(DIR_PROJECT_ROOT, 'protocol.json')
+SETTINGS_FILE = os.path.join(DIR_PROJECT_ROOT, os.getenv('PROTOCOL_JSON_FILE'))
 
 # Logfile
 settings.set_logfile("/tmp/logfile.log", max_bytes=1e7, backup_count=3)

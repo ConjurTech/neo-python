@@ -53,10 +53,7 @@ class NotificationDB():
 
         # Connect to psql
         try:
-            self._db = psycopg2.connect("dbname=" + os.environ['NEO_PYTHON_DBNAME'] +
-                                    " user=" + os.environ['NEO_PYTHON_USER'] +
-                                    " password=" + os.environ['NEO_PYTHON_PASSWORD'] +
-                                    " host=" + os.environ['NEO_PYTHON_HOST'])
+            self._db = psycopg2.connect(os.getenv('DATABASE_URL'))
         except Exception as ex:
             print('failed to connect to psql')
             print("Error: " + str(ex))
@@ -93,9 +90,16 @@ class NotificationDB():
         self._events_to_write = []
 
     def within_script_hash_list(self, contract_hash):
-        for hash in os.environ['NEO_PYTHON_SCRIPT_HASHES']:
-            if hash == contract_hash:
+        print('comparing contract hash white list with:')
+        print(contract_hash)
+        contract_hashes = os.getenv("CONTRACT_HASH_LIST").split(" ")
+        for item in contract_hashes:
+            print('iterating contract hashes')
+            print(item)
+            if str(item) == str(contract_hash):
+                print('contract found!')
                 return True
+        print('contract not found!')
         return False
 
     def write_event_to_psql(self, event):
@@ -129,4 +133,5 @@ class NotificationDB():
 
         self._db.commit()
         cur.close()
+        print('DONE WRITING TO PSQL')
         # conn.close()
