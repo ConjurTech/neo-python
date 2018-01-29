@@ -61,3 +61,4 @@ virtualenv==15.1.0
 wcwidth==0.1.7
 Werkzeug==0.14.1
 zope.interface==4.4.3
+psycopg2==2.7.3.2
