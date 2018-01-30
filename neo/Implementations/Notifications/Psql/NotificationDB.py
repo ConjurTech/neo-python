@@ -52,11 +52,14 @@ class NotificationDB():
     def __init__(self, path):
 
         # Connect to psql
-        try:
-            self._db = psycopg2.connect(os.getenv('DATABASE_URL'))
-        except Exception as ex:
-            print('failed to connect to psql')
-            print("Error: " + str(ex))
+        self._db = psycopg2.connect(os.getenv('DATABASE_URL'))
+        cur = self._db.cursor()
+        cur.execute("select exists(select * from information_schema.tables where table_name=%s)", ('events',))
+        if not(cur.fetchone()[0]):
+            print('table does not exist')
+            cur.execute("CREATE TABLE events (id serial PRIMARY KEY, block_number varchar, transaction_hash varchar, contract_hash varchar, event_type varchar, data jsonb);")
+            self._db.commit()
+            cur.close()
 
     def start(self):
         # Handle EventHub events for SmartContract decorators
@@ -103,7 +106,7 @@ class NotificationDB():
         return False
 
     def write_event_to_psql(self, event):
-        print('WRITING TO PSQL')
+        logger.info('WRITING TO PSQL')
 
         # Prepare variables
         event_type = event.event_type.encode('utf-8')
