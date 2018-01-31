@@ -9,16 +9,16 @@
       "02a7bc55fe8684e0119768d104ba30795bdcc86619e864add26156723ed185cd62"
     ],
     "SeedList": [
-      "128.199.111.185:20333",
-      "128.199.111.185:20334",
-      "128.199.111.185:20335",
-      "128.199.111.185:20336"
+      "13.229.145.235:20333",
+      "13.229.145.235:20334",
+      "13.229.145.235:20335",
+      "13.229.145.235:20336"
     ],
     "RPCList":[
-      "http://128.199.111.185:30333",
-      "http://128.199.111.185:30334",
-      "http://128.199.111.185:30335",
-      "http://128.199.111.185:30336"
+      "https://seed1.switcheo.network:20331",
+      "https://seed2.switcheo.network:20331",
+      "https://seed3.switcheo.network:20331",
+      "https://seed4.switcheo.network:20331"
     ],
     "SystemFee": {
       "EnrollmentTransaction": 1000,
@@ -28,8 +28,8 @@
     }
   },
   "ApplicationConfiguration": {
-    "DataDirectoryPath": "Chains/ChainTestNet",
-    "NotificationDataPath": "Chains/Test_Notif",
+    "DataDirectoryPath": "Chains/Switcheo_Chain",
+    "NotificationDataPath": "Chains/Switcheo_Notif",
     "CertCachePath": "Certs",
     "NodePort": 20333,
     "WsPort": 20334,
