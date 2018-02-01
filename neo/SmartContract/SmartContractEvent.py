@@ -88,6 +88,9 @@ class SmartContractEvent(SerializableMixin):
         pass
 
     def ParsePayload(self):
+        print('parsing payload')
+        print('event type:')
+        print(self.event_payload[0])
         self.event_payload = [self.event_payload[0]] + list(map(lambda x: self.parse_bytes(x), self.event_payload[1:]))
 
     def parse_bytes(self, bytes):

@@ -109,7 +109,7 @@ class NotificationDB():
         logger.info('WRITING TO PSQL')
 
         # Prepare variables
-        event_type = event.event_type.encode('utf-8')
+        event_type = event.event_payload[0].decode('utf-8')
         event_payload = event.event_payload[1:]
         contract_hash = event.contract_hash
         block_number = event.block_number
