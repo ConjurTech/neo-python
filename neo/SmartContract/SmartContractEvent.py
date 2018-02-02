@@ -100,7 +100,7 @@ class SmartContractEvent(SerializableMixin):
             if isinstance(bytes, int):
                 return bytes
             print(len(bytes))
-            if len(str(bytes)) <= 8:
+            if len(bytes) <= 8:
                 print('parse to int')
                 print(int.from_bytes(bytes, byteorder='little'))
                 return int.from_bytes(bytes, byteorder='little')
