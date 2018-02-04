@@ -126,9 +126,13 @@ class NotificationDB():
         print('DATA')
         print(data)
 
-        cur.execute("INSERT INTO events (block_number, transaction_hash, contract_hash, event_type, data) VALUES (%s, %s, %s, %s, %s)",
-                    (str(block_number), str(tx_hash), str(contract_hash), event_type, json.dumps(data)))
+        if(execution_success == 'True'):
 
+            cur.execute("INSERT INTO events (block_number, transaction_hash, contract_hash, event_type, data) VALUES (%s, %s, %s, %s, %s)",
+                        (str(block_number), str(tx_hash), str(contract_hash), event_type, json.dumps(data)))
+        else:
+            print('execution failed, not inserting')
+            
         # cur.execute("SELECT * FROM events;")
         # print(cur.fetchall())
 
