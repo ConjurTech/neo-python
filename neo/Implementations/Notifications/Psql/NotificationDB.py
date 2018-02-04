@@ -117,9 +117,7 @@ class NotificationDB():
         execution_success = event.execution_success
         test_mode = event.test_mode
 
-        data = {'event_payload': event_payload,
-                'execution_success': execution_success,
-                'test_mode': test_mode}
+        data = {'event_payload': event_payload}
 
         cur = self._db.cursor()
 
