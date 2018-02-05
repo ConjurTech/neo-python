@@ -10,6 +10,7 @@ from neocore.IO.Mixins import SerializableMixin
 import json
 import pdb
 import binascii
+import struct
 from logzero import logger
 
 
@@ -107,10 +108,11 @@ class SmartContractEvent(SerializableMixin):
             else:
                 print('parse to hex')
                 hex = binascii.hexlify(bytes)
-                ba = bytearray(hex)
-                ba.reverse()
-                print(str(ba, 'utf-8'))
-                return str(ba, 'utf-8')
+                # ba = bytearray(hex)
+                # ba.reverse()
+                # print(str(ba, 'utf-8'))
+                # return str(ba, 'utf-8')
+                return str(hex, 'utf-8')
         except Exception as ex:
             print('parse error')
             print("Error: " + str(ex))

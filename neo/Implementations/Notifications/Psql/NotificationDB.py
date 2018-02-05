@@ -132,7 +132,7 @@ class NotificationDB():
                         (str(block_number), str(tx_hash), str(contract_hash), event_type, json.dumps(data)))
         else:
             print('execution failed, not inserting')
-            
+
         # cur.execute("SELECT * FROM events;")
         # print(cur.fetchall())
 
