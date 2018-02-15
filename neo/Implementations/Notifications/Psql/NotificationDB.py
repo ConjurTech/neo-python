@@ -2,6 +2,7 @@ import plyvel
 import psycopg2
 import json
 import os
+import datetime
 
 from logzero import logger
 from neo.EventHub import events
@@ -57,9 +58,11 @@ class NotificationDB():
         cur.execute("select exists(select * from information_schema.tables where table_name=%s)", ('events',))
         if not(cur.fetchone()[0]):
             print('table does not exist')
-            cur.execute("CREATE TABLE events (id serial PRIMARY KEY, block_number varchar, transaction_hash varchar, contract_hash varchar, event_type varchar, data jsonb);")
+            cur.execute("CREATE TABLE events (id serial PRIMARY KEY, block_number varchar, transaction_hash varchar, contract_hash varchar, event_type varchar, data jsonb, created_at datetime);")
             self._db.commit()
             cur.close()
+
+
 
     def start(self):
         # Handle EventHub events for SmartContract decorators
@@ -128,8 +131,8 @@ class NotificationDB():
 
         if(execution_success == True):
 
-            cur.execute("INSERT INTO events (block_number, transaction_hash, contract_hash, event_type, data) VALUES (%s, %s, %s, %s, %s)",
-                        (str(block_number), str(tx_hash), str(contract_hash), event_type, json.dumps(data)))
+            cur.execute("INSERT INTO events (block_number, transaction_hash, contract_hash, event_type, data, created_at) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                        (str(block_number), str(tx_hash), str(contract_hash), event_type, json.dumps(data)), datetime.now)
         else:
             print('execution failed, not inserting')
 
