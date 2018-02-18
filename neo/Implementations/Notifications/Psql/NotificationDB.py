@@ -132,7 +132,7 @@ class NotificationDB():
         if(execution_success == True):
 
             cur.execute("INSERT INTO events (block_number, transaction_hash, contract_hash, event_type, data, created_at) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                        (str(block_number), str(tx_hash), str(contract_hash), event_type, json.dumps(data)), str(datetime.datetime.now()))
+                        (str(block_number), str(tx_hash), str(contract_hash), event_type, json.dumps(data), str(datetime.datetime.now())))
         else:
             print('execution failed, not inserting')
 
