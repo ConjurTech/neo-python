@@ -89,32 +89,18 @@ class SmartContractEvent(SerializableMixin):
         pass
 
     def ParsePayload(self):
-        print('parsing payload')
-        print('event type:')
-        print(self.event_payload[0])
         self.event_payload = [self.event_payload[0]] + list(map(lambda x: self.parse_bytes(x), self.event_payload[1:]))
 
     def parse_bytes(self, bytes):
-        print('parsing')
-        print(bytes)
         try:
             if isinstance(bytes, int):
                 return bytes
-            print(len(bytes))
             if len(bytes) <= 8:
-                print('parse to int')
-                print(int.from_bytes(bytes, byteorder='little'))
                 return int.from_bytes(bytes, byteorder='little')
             else:
-                print('parse to hex')
                 hex = binascii.hexlify(bytes)
-                # ba = bytearray(hex)
-                # ba.reverse()
-                # print(str(ba, 'utf-8'))
-                # return str(ba, 'utf-8')
                 return str(hex, 'utf-8')
         except Exception as ex:
-            print('parse error')
             print("Error: " + str(ex))
             return bytes
 
@@ -230,7 +216,7 @@ class NotifyEvent(SmartContractEvent):
                     self.addr_from = self.contract_hash
                     self.is_standard_notify = True
             except Exception as e:
-                print("Could not determin notify event: %s %s" % (e, self.event_payload))
+                print("Unknown event: %s %s" % (e, self.event_payload))
                 for item in self.event_payload:
                     print("item: %s %s " % (item, type(item)))
 

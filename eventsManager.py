@@ -9,7 +9,7 @@ from neo.Network.NodeLeader import NodeLeader
 from neo.Core.Blockchain import Blockchain
 from neo.Implementations.Blockchains.LevelDB.LevelDBBlockchain import LevelDBBlockchain
 from neo.Settings import settings
-from neo.Implementations.Notifications.Psql.NotificationDB import NotificationDB
+from neo.Implementations.Notifications.PostgreSQL.NotificationDB import NotificationDB
 
 # Create am absolute references to the project root folder. Used for
 # specifying the various filenames.
