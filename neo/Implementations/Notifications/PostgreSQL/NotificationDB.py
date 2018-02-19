@@ -84,7 +84,7 @@ class NotificationDB:
         cur = self._db.cursor()
         cur.execute(
             "INSERT INTO events (block_number, transaction_hash, contract_hash, event_type, event_payload, event_time) VALUES (%s, %s, %s, %s, %s, %s)",
-            (block_number, str(tx_hash), str(contract_hash), event_type, json.dumps(event_payload), datetime.fromtimestamp(block.Timestamp)))
+            (block_number, str(tx_hash), str(contract_hash), event_type, json.dumps(event_payload), datetime.datetime.fromtimestamp(block.Timestamp)))
 
         self._db.commit()
         cur.close()
