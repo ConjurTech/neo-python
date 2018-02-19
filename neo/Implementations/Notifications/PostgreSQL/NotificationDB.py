@@ -7,6 +7,7 @@ from neo.EventHub import events
 from neo.SmartContract.SmartContractEvent import SmartContractEvent, NotifyEvent
 from neo.Settings import settings
 from neo.Core.Blockchain import Blockchain
+from logzero import logger
 
 
 class NotificationDB:
@@ -60,7 +61,7 @@ class NotificationDB:
     def on_persist_completed(self, block):
         for evt in self._events_to_write:
             evt.ParsePayload()
-            if self.within_script_hash_list(evt.contract_hash):
+            if self.within_script_hash_list(str(evt.contract_hash)):
                 self.write_event_to_psql(evt, block)
 
         self._events_to_write = []
@@ -72,7 +73,7 @@ class NotificationDB:
     def write_event_to_psql(self, event, block):
         if not event.execution_success or event.test_mode:
             return
-
+        logger.info("Writing event to psql: %s" % event)
         # Prepare variables
         event_type = event.event_payload[0].decode('utf-8')
         event_payload = event.event_payload[1:]
