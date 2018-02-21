@@ -31,6 +31,7 @@
     "DataDirectoryPath": "Chains/Switcheo_Chain",
     "NotificationDataPath": "Chains/Switcheo_Notif",
     "CertCachePath": "Certs",
+    "RPCPort": 20331,
     "NodePort": 20333,
     "WsPort": 20334,
     "UriPrefix": [ "http://*:20332" ],
