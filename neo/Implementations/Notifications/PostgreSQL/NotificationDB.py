@@ -117,23 +117,23 @@ class NotificationDB:
             (block_number, str(tx_hash), str(contract_hash), event_type, json.dumps(event_payload),
              datetime.datetime.fromtimestamp(block.Timestamp), blockchain))
 
-        if event_type == "created":
-
-            address = event_payload[0]
-            offer_hash = event_payload[1]
-            offer_asset_id = event_payload[2]
-            offer_amount = event_payload[3]
-            want_asset_id = event_payload[4]
-            want_amount = event_payload[5]
-
-            cur.execute(
-                "INSERT INTO offers ("
-                "block_number, transaction_hash, contract_hash, offer_time,"
-                "blockchain, address, offer_hash, offer_asset_id, offer_amount, want_asset_id, want_amount)"
-                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                (block_number, str(tx_hash), str(contract_hash), datetime.datetime.fromtimestamp(block.Timestamp),
-                 blockchain, address, offer_hash, offer_asset_id, offer_amount, want_asset_id, want_amount)
-            )
+        # if event_type == "created":
+        #
+        #     address = event_payload[0]
+        #     offer_hash = event_payload[1]
+        #     offer_asset_id = event_payload[2]
+        #     offer_amount = event_payload[3]
+        #     want_asset_id = event_payload[4]
+        #     want_amount = event_payload[5]
+        #
+        #     cur.execute(
+        #         "INSERT INTO offers ("
+        #         "block_number, transaction_hash, contract_hash, offer_time,"
+        #         "blockchain, address, offer_hash, offer_asset_id, offer_amount, want_asset_id, want_amount)"
+        #         " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+        #         (block_number, str(tx_hash), str(contract_hash), datetime.datetime.fromtimestamp(block.Timestamp),
+        #          blockchain, address, offer_hash, offer_asset_id, offer_amount, want_asset_id, want_amount)
+        #     )
 
         self._db.commit()
         cur.close()
