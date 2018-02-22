@@ -11,7 +11,6 @@ from logzero import logger
 
 
 class NotificationDB:
-
     __instance = None
 
     _events_to_write = None
@@ -41,8 +40,33 @@ class NotificationDB:
         # Connect to psql
         self._db = psycopg2.connect(os.getenv('DATABASE_URL'))
         cur = self._db.cursor()
-        # NOTE: ensure uuid-ossp module is installed and enabled with `CREATE EXTENSION uuid-ossp;`;
-        cur.execute("CREATE TABLE IF NOT EXISTS events (id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), block_number INTEGER, transaction_hash VARCHAR, contract_hash VARCHAR, event_type VARCHAR, event_payload JSONB, event_time TIMESTAMP);")
+        # NOTE: ensure uuid-ossp module is installed and enabled with `CREATE EXTENSION "uuid-ossp";`;
+        cur.execute(
+            "CREATE TABLE IF NOT EXISTS events ("
+            "id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), "
+            "block_number INTEGER, "
+            "transaction_hash VARCHAR, "
+            "contract_hash VARCHAR, "
+            "event_type VARCHAR, "
+            "event_payload JSONB, "
+            "event_time TIMESTAMP, "
+            "blockchain VARCHAR);")
+
+        cur.execute(
+            "CREATE TABLE IF NOT EXISTS offers ("
+            "id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), "
+            "block_number INTEGER, "
+            "transaction_hash VARCHAR, "
+            "contract_hash VARCHAR, "
+            "offer_time TIMESTAMP, "
+            "blockchain VARCHAR, "
+            "address VARCHAR, "
+            "offer_hash VARCHAR, "
+            "offer_asset_id VARCHAR, "
+            "offer_amount bigint, "
+            "want_asset_id VARCHAR, "
+            "want_amount bigint);")
+
         self._db.commit()
         cur.close()
 
@@ -73,18 +97,44 @@ class NotificationDB:
     def write_event_to_psql(self, event, block):
         if not event.execution_success or event.test_mode:
             return
+
         logger.info("Writing event to psql: %s" % event)
+
         # Prepare variables
         event_type = event.event_payload[0].decode('utf-8')
         event_payload = event.event_payload[1:]
         contract_hash = event.contract_hash
         block_number = event.block_number
         tx_hash = event.tx_hash
+        blockchain = 'neo'
 
         cur = self._db.cursor()
+
         cur.execute(
-            "INSERT INTO events (block_number, transaction_hash, contract_hash, event_type, event_payload, event_time) VALUES (%s, %s, %s, %s, %s, %s)",
-            (block_number, str(tx_hash), str(contract_hash), event_type, json.dumps(event_payload), datetime.datetime.fromtimestamp(block.Timestamp)))
+            "INSERT INTO events ("
+            "block_number, transaction_hash, contract_hash, event_type, event_payload, event_time, blockchain)"
+            " VALUES (%s, %s, %s, %s, %s, %s, %s)",
+            (block_number, str(tx_hash), str(contract_hash), event_type, json.dumps(event_payload),
+             datetime.datetime.fromtimestamp(block.Timestamp), blockchain))
+
+        if event_type == "created":
+
+            address = event_payload[0]
+            offer_hash = event_payload[1]
+            offer_asset_id = event_payload[2]
+            offer_amount = event_payload[3]
+            want_asset_id = event_payload[4]
+            want_amount = event_payload[5]
+
+            cur.execute(
+                "INSERT INTO offers ("
+                "block_number, transaction_hash, contract_hash, offer_time,"
+                "blockchain, address, offer_hash, offer_asset_id, offer_amount, want_asset_id, want_amount)"
+                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                (block_number, str(tx_hash), str(contract_hash), datetime.datetime.fromtimestamp(block.Timestamp),
+                 blockchain, address, offer_hash, offer_asset_id, offer_amount, want_asset_id, want_amount)
+            )
 
         self._db.commit()
         cur.close()
+
