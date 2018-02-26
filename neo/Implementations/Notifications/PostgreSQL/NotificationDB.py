@@ -147,7 +147,7 @@ class NotificationDB:
                 "INSERT INTO history ("
                 "block_number, transaction_hash, contract_hash, event_type, address, offer_hash, filled_amount, "
                 "offer_asset_id, offer_amount, want_asset_id, want_amount, event_time, blockchain)"
-                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
                 (block_number, str(tx_hash), str(contract_hash), event_type, address, offer_hash, filled_amount,
                  offer_asset_id, offer_amount, want_asset_id, want_amount,
                  datetime.datetime.fromtimestamp(block.Timestamp), blockchain))
