@@ -68,7 +68,7 @@ class NotificationDB:
             "want_amount BIGINT);")
 
         cur.execute(
-            "CREATE TABLE IF NOT EXISTS events ("
+            "CREATE TABLE IF NOT EXISTS history ("
             "id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), "
             "block_number INTEGER, "
             "transaction_hash VARCHAR, "
