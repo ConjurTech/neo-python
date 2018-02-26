@@ -135,13 +135,13 @@ class NotificationDB:
              datetime.datetime.fromtimestamp(block.Timestamp), blockchain))
 
         if event_type == "filled":
-            address = event_payload[1]
-            offer_hash = event_payload[2]
-            filled_amount = event_payload[3]
-            offer_asset_id = event_payload[4]
-            offer_amount = event_payload[5]
-            want_asset_id = event_payload[6]
-            want_amount = event_payload[7]
+            address = event_payload[0]
+            offer_hash = event_payload[1]
+            filled_amount = event_payload[2]
+            offer_asset_id = event_payload[3]
+            offer_amount = event_payload[4]
+            want_asset_id = event_payload[5]
+            want_amount = event_payload[6]
 
             cur.execute(
                 "INSERT INTO histories ("
