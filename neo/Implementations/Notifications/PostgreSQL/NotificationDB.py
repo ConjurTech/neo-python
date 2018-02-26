@@ -63,9 +63,26 @@ class NotificationDB:
             "address VARCHAR, "
             "offer_hash VARCHAR, "
             "offer_asset_id VARCHAR, "
-            "offer_amount bigint, "
+            "offer_amount BIGINT, "
             "want_asset_id VARCHAR, "
-            "want_amount bigint);")
+            "want_amount BIGINT);")
+
+        cur.execute(
+            "CREATE TABLE IF NOT EXISTS events ("
+            "id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), "
+            "block_number INTEGER, "
+            "transaction_hash VARCHAR, "
+            "contract_hash VARCHAR, "
+            "event_type VARCHAR, "
+            "address VARCHAR, "
+            "offer_hash VARCHAR, "
+            "filled_amount BIGINT, "
+            "offer_asset_id VARCHAR, "
+            "offer_amount BIGINT, "
+            "want_asset_id VARCHAR, "
+            "want_amount BIGINT, "
+            "event_time TIMESTAMP, "
+            "blockchain VARCHAR);")
 
         self._db.commit()
         cur.close()
@@ -117,6 +134,24 @@ class NotificationDB:
             (block_number, str(tx_hash), str(contract_hash), event_type, json.dumps(event_payload),
              datetime.datetime.fromtimestamp(block.Timestamp), blockchain))
 
+        if event_type == "filled":
+            address = event_payload[1]
+            offer_hash = event_payload[2]
+            filled_amount = event_payload[1]
+            offer_asset_id = event_payload[1]
+            offer_amount = event_payload[1]
+            want_asset_id = event_payload[1]
+            want_amount = event_payload[1]
+
+            cur.execute(
+                "INSERT INTO history ("
+                "block_number, transaction_hash, contract_hash, event_type, address, offer_hash, filled_amount, "
+                "offer_asset_id, offer_amount, want_asset_id, want_amount, event_time, blockchain)"
+                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                (block_number, str(tx_hash), str(contract_hash), event_type, address, offer_hash, filled_amount,
+                 offer_asset_id, offer_amount, want_asset_id, want_amount,
+                 datetime.datetime.fromtimestamp(block.Timestamp), blockchain))
+
         # if event_type == "created":
         #
         #     address = event_payload[0]
@@ -137,4 +172,3 @@ class NotificationDB:
 
         self._db.commit()
         cur.close()
-
