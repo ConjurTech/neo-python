@@ -68,7 +68,7 @@ class NotificationDB:
             "want_amount BIGINT);")
 
         cur.execute(
-            "CREATE TABLE IF NOT EXISTS histories ("
+            "CREATE TABLE IF NOT EXISTS trades ("
             "id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), "
             "block_number INTEGER, "
             "transaction_hash VARCHAR, "
@@ -144,7 +144,7 @@ class NotificationDB:
             want_amount = event_payload[6]
 
             cur.execute(
-                "INSERT INTO histories ("
+                "INSERT INTO trades ("
                 "block_number, transaction_hash, contract_hash, event_type, address, offer_hash, filled_amount, "
                 "offer_asset_id, offer_amount, want_asset_id, want_amount, event_time, blockchain)"
                 " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
