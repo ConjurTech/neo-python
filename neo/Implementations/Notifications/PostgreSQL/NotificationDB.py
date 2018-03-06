@@ -85,8 +85,16 @@ class NotificationDB:
             "blockchain VARCHAR);")
 
         cur.execute(
-            "CREATE TABLE IF NOT EXISTS unmatched_offers ("
+            "CREATE TABLE IF NOT EXISTS orders ("
             "id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), "
+            "transaction_hash VARCHAR, "
+            "contract_hash VARCHAR, "
+            "blockchain VARCHAR, ")
+
+        cur.execute(
+            "CREATE TABLE IF NOT EXISTS pending_offers ("
+            "id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), "
+            "order VARCHAR references orders(order)"
             "block_number INTEGER, "
             "transaction_hash VARCHAR, "
             "contract_hash VARCHAR, "
@@ -98,6 +106,24 @@ class NotificationDB:
             "offer_amount BIGINT, "
             "want_asset_id VARCHAR, "
             "want_amount BIGINT);")
+
+        cur.execute(
+            "CREATE TABLE IF NOT EXISTS pending_fills ("
+            "id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), "
+            "order VARCHAR references orders(order)"
+            "pending_offer VARCHAR references pending_offers(pending_offer)"
+            "block_number INTEGER, "
+            "transaction_hash VARCHAR, "
+            "contract_hash VARCHAR, "
+            "event_type VARCHAR, "
+            "address VARCHAR, "
+            "filled_amount BIGINT, "
+            "offer_asset_id VARCHAR, "
+            "offer_amount BIGINT, "
+            "want_asset_id VARCHAR, "
+            "want_amount BIGINT, "
+            "event_time TIMESTAMP, "
+            "blockchain VARCHAR);")
 
         self._db.commit()
         cur.close()
