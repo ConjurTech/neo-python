@@ -100,8 +100,6 @@ class NotificationDB:
             "contract_hash VARCHAR, "
             "offer_time TIMESTAMP, "
             "blockchain VARCHAR, "
-            "address VARCHAR, "
-            "offer_hash VARCHAR, "
             "offer_asset_id VARCHAR, "
             "offer_amount BIGINT, "
             "want_asset_id VARCHAR, "
@@ -115,8 +113,6 @@ class NotificationDB:
             "block_number INTEGER, "
             "transaction_hash VARCHAR, "
             "contract_hash VARCHAR, "
-            "event_type VARCHAR, "
-            "address VARCHAR, "
             "filled_amount BIGINT, "
             "offer_asset_id VARCHAR, "
             "offer_amount BIGINT, "
@@ -192,6 +188,34 @@ class NotificationDB:
                 (block_number, str(tx_hash), str(contract_hash), event_type, address, offer_hash, filled_amount,
                  offer_asset_id, offer_amount, want_asset_id, want_amount,
                  datetime.datetime.fromtimestamp(block.Timestamp), blockchain))
+
+        if event_type == "created":
+            offer_hash = event_payload[0]
+            offer_asset_id = event_payload[1]
+            offer_amount = event_payload[2]
+            want_asset_id = event_payload[3]
+            want_amount = event_payload[4]
+
+            # Search orders for same tx hash
+            cur.execute("SELECT id FROM orders WHERE transaction_hash = %s", str(tx_hash))
+            order_id = cur.fetchall()
+
+            # Insert order if none with same tx hash
+            if order_id is None:
+                cur.execute("INSERT INTO orders (transaction_hash, contract_hash, blockchain)"
+                            "VALUES(%s, %s, %s)",
+                            str(tx_hash), str(contract_hash), blockchain)
+
+            # Create pending offer with tx hash of the order
+            cur.execute(
+                "INSERT INTO pending_offers ("
+                "block_number, transaction_hash, contract_hash, offer_time,"
+                "blockchain, offer_asset_id, offer_amount, want_asset_id, want_amount)"
+                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                (block_number, str(tx_hash), str(contract_hash), datetime.datetime.fromtimestamp(block.Timestamp),
+                 blockchain, offer_asset_id, offer_amount, want_asset_id, want_amount)
+
+            )
 
         # if event_type == "created":
         #
