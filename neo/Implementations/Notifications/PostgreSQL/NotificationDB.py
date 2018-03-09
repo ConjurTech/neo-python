@@ -97,6 +97,7 @@ class NotificationDB:
             "order VARCHAR references orders(order)"
             "block_number INTEGER, "
             "transaction_hash VARCHAR, "
+            "offer_hash VARCHAR, "
             "contract_hash VARCHAR, "
             "offer_time TIMESTAMP, "
             "blockchain VARCHAR, "
@@ -112,6 +113,7 @@ class NotificationDB:
             "pending_offer VARCHAR references pending_offers(pending_offer)"
             "block_number INTEGER, "
             "transaction_hash VARCHAR, "
+            "offer_hash VARCHAR, "
             "contract_hash VARCHAR, "
             "filled_amount BIGINT, "
             "offer_asset_id VARCHAR, "
@@ -209,12 +211,11 @@ class NotificationDB:
             # Create pending offer with tx hash of the order
             cur.execute(
                 "INSERT INTO pending_offers ("
-                "block_number, transaction_hash, contract_hash, offer_time,"
+                "block_number, transaction_hash, offer_hash, contract_hash, offer_time,"
                 "blockchain, offer_asset_id, offer_amount, want_asset_id, want_amount)"
                 " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                (block_number, str(tx_hash), str(contract_hash), datetime.datetime.fromtimestamp(block.Timestamp),
+                (block_number, str(tx_hash), offer_hash, str(contract_hash), datetime.datetime.fromtimestamp(block.Timestamp),
                  blockchain, offer_asset_id, offer_amount, want_asset_id, want_amount)
-
             )
 
         # if event_type == "created":
