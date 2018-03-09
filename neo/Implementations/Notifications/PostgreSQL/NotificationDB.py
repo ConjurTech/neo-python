@@ -94,7 +94,7 @@ class NotificationDB:
         cur.execute(
             "CREATE TABLE IF NOT EXISTS pending_offers ("
             "id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), "
-            "order VARCHAR references orders(order)"
+            "order_id VARCHAR references orders(order)"
             "block_number INTEGER, "
             "transaction_hash VARCHAR, "
             "offer_hash VARCHAR, "
@@ -109,7 +109,7 @@ class NotificationDB:
         cur.execute(
             "CREATE TABLE IF NOT EXISTS pending_fills ("
             "id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), "
-            "order VARCHAR references orders(order)"
+            "order_id VARCHAR references orders(order)"
             "pending_offer VARCHAR references pending_offers(pending_offer)"
             "block_number INTEGER, "
             "transaction_hash VARCHAR, "
