@@ -89,7 +89,7 @@ class NotificationDB:
             "id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), "
             "transaction_hash VARCHAR, "
             "contract_hash VARCHAR, "
-            "blockchain VARCHAR, ")
+            "blockchain VARCHAR);")
 
         cur.execute(
             "CREATE TABLE IF NOT EXISTS pending_offers ("
