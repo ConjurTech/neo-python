@@ -98,6 +98,7 @@ class NotificationDB:
             "id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), "
             "order_id UUID references orders, "
             "offer_id UUID references offers,"
+            "address VARCHAR, "
             "block_number INTEGER, "
             "transaction_hash VARCHAR, "
             "offer_hash VARCHAR, "
