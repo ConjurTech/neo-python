@@ -53,22 +53,6 @@ class NotificationDB:
             "blockchain VARCHAR);")
 
         cur.execute(
-            "CREATE TABLE IF NOT EXISTS offers ("
-            "id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), "
-            "order_id UUID references orders, "
-            "block_number INTEGER, "
-            "transaction_hash VARCHAR, "
-            "contract_hash VARCHAR, "
-            "offer_time TIMESTAMP, "
-            "blockchain VARCHAR, "
-            "address VARCHAR, "
-            "offer_hash VARCHAR, "
-            "offer_asset_id VARCHAR, "
-            "offer_amount BIGINT, "
-            "want_asset_id VARCHAR, "
-            "want_amount BIGINT);")
-
-        cur.execute(
             "CREATE TABLE IF NOT EXISTS trades ("
             "id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), "
             "block_number INTEGER, "
@@ -91,6 +75,22 @@ class NotificationDB:
             "transaction_hash VARCHAR, "
             "contract_hash VARCHAR, "
             "blockchain VARCHAR);")
+
+        cur.execute(
+            "CREATE TABLE IF NOT EXISTS offers ("
+            "id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), "
+            "order_id UUID references orders, "
+            "block_number INTEGER, "
+            "transaction_hash VARCHAR, "
+            "contract_hash VARCHAR, "
+            "offer_time TIMESTAMP, "
+            "blockchain VARCHAR, "
+            "address VARCHAR, "
+            "offer_hash VARCHAR, "
+            "offer_asset_id VARCHAR, "
+            "offer_amount BIGINT, "
+            "want_asset_id VARCHAR, "
+            "want_amount BIGINT);")
 
         cur.execute(
             "CREATE TABLE IF NOT EXISTS pending_fills ("
