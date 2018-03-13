@@ -180,6 +180,19 @@ class NotificationDB:
                  offer_asset_id, offer_amount, want_asset_id, want_amount,
                  datetime.datetime.fromtimestamp(block.Timestamp), blockchain))
 
+            # Update available amount of corresponding offer
+            cur.execute(
+                "SELECT available_amount FROM offers WHERE offer_hash = %s",
+                offer_hash
+            )
+
+            available_amount = cur.fetchone[0]
+
+            cur.execute(
+                "UPDATE offers SET available_amount = %s WHERE offer_hash = %s",
+                (available_amount - filled_amount, offer_hash)
+            )
+
             # TODO: Remove corresponding pending fill
 
         if event_type == "created":
@@ -209,8 +222,10 @@ class NotificationDB:
                 "order_id, block_number, transaction_hash, contract_hash, offer_time,"
                 "blockchain, address, available_amount, offer_hash, offer_asset_id, offer_amount, want_asset_id, want_amount)"
                 " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                (order_id, block_number, str(tx_hash), str(contract_hash), datetime.datetime.fromtimestamp(block.Timestamp),
-                 blockchain, address, available_amount, offer_hash, offer_asset_id, offer_amount, want_asset_id, want_amount)
+                (order_id, block_number, str(tx_hash), str(contract_hash),
+                 datetime.datetime.fromtimestamp(block.Timestamp),
+                 blockchain, address, available_amount, offer_hash, offer_asset_id, offer_amount, want_asset_id,
+                 want_amount)
             )
 
         self._db.commit()
