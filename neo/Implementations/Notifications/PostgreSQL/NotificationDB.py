@@ -180,20 +180,31 @@ class NotificationDB:
                  offer_asset_id, offer_amount, want_asset_id, want_amount,
                  datetime.datetime.fromtimestamp(block.Timestamp), blockchain))
 
+            # Remove corresponding pending fill
+            cur.execute(
+                "DELETE FROM pending_fills WHERE offer_hash = %s AND filled_amount = %s AND address = %s",
+                (offer_hash, filled_amount, address)
+            )
+
             # Update available amount of corresponding offer
             cur.execute(
-                "SELECT available_amount FROM offers WHERE offer_hash = %s",
+                "SELECT sum(filled_amount FROM pending_fills WHERE offer_hash = %s",
                 offer_hash
             )
 
-            available_amount = cur.fetchone[0]
+            pending_fills_amount = cur.fetchone[0]
+
+            cur.execute(
+                "SELECT sum(filled_amount FROM trades WHERE offer_hash = %s",
+                offer_hash
+            )
+
+            trades_amount = cur.fetchone[0]
 
             cur.execute(
                 "UPDATE offers SET available_amount = %s WHERE offer_hash = %s",
-                (available_amount - filled_amount, offer_hash)
+                (pending_fills_amount + trades_amount, offer_hash)
             )
-
-            # TODO: Remove corresponding pending fill
 
         if event_type == "created":
 
