@@ -86,6 +86,7 @@ class NotificationDB:
             "offer_time TIMESTAMP, "
             "blockchain VARCHAR, "
             "address VARCHAR, "
+            "available_amount BIGINT, "
             "offer_hash VARCHAR, "
             "offer_asset_id VARCHAR, "
             "offer_amount BIGINT, "
@@ -184,14 +185,14 @@ class NotificationDB:
 
             # Search orders for same tx hash
             cur.execute("SELECT id FROM orders WHERE transaction_hash = %s", str(tx_hash))
-            order_id = cur.fetchone()
+            order_id = cur.fetchone()[0]
 
             # Insert into orders if there are none with the same tx hash
             if order_id is None:
                 cur.execute("INSERT INTO orders (transaction_hash, contract_hash, blockchain)"
                             "VALUES(%s, %s, %s)",
                             str(tx_hash), str(contract_hash), blockchain)
-                order_id = cur.fetchone()
+                order_id = cur.fetchone()[0]
 
             # Insert into offers using found/created order
             address = event_payload[0]
@@ -200,14 +201,15 @@ class NotificationDB:
             offer_amount = event_payload[3]
             want_asset_id = event_payload[4]
             want_amount = event_payload[5]
+            available_amount = offer_amount
 
             cur.execute(
                 "INSERT INTO offers ("
                 "order_id, block_number, transaction_hash, contract_hash, offer_time,"
-                "blockchain, address, offer_hash, offer_asset_id, offer_amount, want_asset_id, want_amount)"
-                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                "blockchain, address, available_amount, offer_hash, offer_asset_id, offer_amount, want_asset_id, want_amount)"
+                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
                 (order_id, block_number, str(tx_hash), str(contract_hash), datetime.datetime.fromtimestamp(block.Timestamp),
-                 blockchain, address, offer_hash, offer_asset_id, offer_amount, want_asset_id, want_amount)
+                 blockchain, address, available_amount, offer_hash, offer_asset_id, offer_amount, want_asset_id, want_amount)
             )
 
         self._db.commit()
