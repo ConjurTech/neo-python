@@ -55,6 +55,7 @@ class NotificationDB:
         cur.execute(
             "CREATE TABLE IF NOT EXISTS offers ("
             "id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), "
+            "order_id UUID references orders, "
             "block_number INTEGER, "
             "transaction_hash VARCHAR, "
             "contract_hash VARCHAR, "
@@ -92,25 +93,10 @@ class NotificationDB:
             "blockchain VARCHAR);")
 
         cur.execute(
-            "CREATE TABLE IF NOT EXISTS pending_offers ("
-            "id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), "
-            "order_id UUID references orders, "
-            "block_number INTEGER, "
-            "transaction_hash VARCHAR, "
-            "offer_hash VARCHAR, "
-            "contract_hash VARCHAR, "
-            "offer_time TIMESTAMP, "
-            "blockchain VARCHAR, "
-            "offer_asset_id VARCHAR, "
-            "offer_amount BIGINT, "
-            "want_asset_id VARCHAR, "
-            "want_amount BIGINT);")
-
-        cur.execute(
             "CREATE TABLE IF NOT EXISTS pending_fills ("
             "id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), "
             "order_id UUID references orders, "
-            "pending_offer_id UUID references pending_offers,"
+            "offer_id UUID references offers,"
             "block_number INTEGER, "
             "transaction_hash VARCHAR, "
             "offer_hash VARCHAR, "
@@ -156,7 +142,7 @@ class NotificationDB:
 
         logger.info("Writing event to psql: %s" % event)
 
-        # Prepare variables
+        # Insert into events
         event_type = event.event_payload[0].decode('utf-8')
         event_payload = event.event_payload[1:]
         contract_hash = event.contract_hash
@@ -182,6 +168,7 @@ class NotificationDB:
             want_asset_id = event_payload[5]
             want_amount = event_payload[6]
 
+            # Insert into trades
             cur.execute(
                 "INSERT INTO trades ("
                 "block_number, transaction_hash, contract_hash, event_type, address, offer_hash, filled_amount, "
@@ -191,35 +178,22 @@ class NotificationDB:
                  offer_asset_id, offer_amount, want_asset_id, want_amount,
                  datetime.datetime.fromtimestamp(block.Timestamp), blockchain))
 
+            # TODO: Remove corresponding pending fill
+
         if event_type == "created":
-            offer_hash = event_payload[0]
-            offer_asset_id = event_payload[1]
-            offer_amount = event_payload[2]
-            want_asset_id = event_payload[3]
-            want_amount = event_payload[4]
 
             # Search orders for same tx hash
             cur.execute("SELECT id FROM orders WHERE transaction_hash = %s", str(tx_hash))
-            order_id = cur.fetchall()
+            order_id = cur.fetchone()
 
-            # Insert order if none with same tx hash
+            # Insert into orders if there are none with the same tx hash
             if order_id is None:
                 cur.execute("INSERT INTO orders (transaction_hash, contract_hash, blockchain)"
                             "VALUES(%s, %s, %s)",
                             str(tx_hash), str(contract_hash), blockchain)
+                order_id = cur.fetchone()
 
-            # Create pending offer with tx hash of the order
-            cur.execute(
-                "INSERT INTO pending_offers ("
-                "block_number, transaction_hash, offer_hash, contract_hash, offer_time,"
-                "blockchain, offer_asset_id, offer_amount, want_asset_id, want_amount)"
-                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                (block_number, str(tx_hash), offer_hash, str(contract_hash), datetime.datetime.fromtimestamp(block.Timestamp),
-                 blockchain, offer_asset_id, offer_amount, want_asset_id, want_amount)
-            )
-
-        if event_type == "created":
-
+            # Insert into offers using found/created order
             address = event_payload[0]
             offer_hash = event_payload[1]
             offer_asset_id = event_payload[2]
@@ -229,10 +203,10 @@ class NotificationDB:
 
             cur.execute(
                 "INSERT INTO offers ("
-                "block_number, transaction_hash, contract_hash, offer_time,"
+                "order_id, block_number, transaction_hash, contract_hash, offer_time,"
                 "blockchain, address, offer_hash, offer_asset_id, offer_amount, want_asset_id, want_amount)"
-                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                (block_number, str(tx_hash), str(contract_hash), datetime.datetime.fromtimestamp(block.Timestamp),
+                " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                (order_id, block_number, str(tx_hash), str(contract_hash), datetime.datetime.fromtimestamp(block.Timestamp),
                  blockchain, address, offer_hash, offer_asset_id, offer_amount, want_asset_id, want_amount)
             )
 
