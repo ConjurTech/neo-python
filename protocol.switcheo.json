@@ -43,6 +43,7 @@
       "TransactionUrl": "http://testnet.antcha.in/tx/hash/{0}"
     },
     "VersionName": "/NEO-PYTHON:2.3.4/",
-    "BootstrapFile":""
+    "BootstrapFile":"",
+    "NotificationBootstrapFile":""
   }
 }
