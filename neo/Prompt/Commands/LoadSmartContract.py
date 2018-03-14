@@ -50,8 +50,9 @@ def ImportContractAddr(wallet, args):
             wallet.AddContract(verification_contract)
 
             print("Added contract addres %s to wallet" % address)
+            return
 
-    return 'Hello'
+    print("Could not add contract.  Invalid public key or contract address")
 
 
 def LoadContract(args):
@@ -81,8 +82,6 @@ def LoadContract(args):
 
     if needs_dynamic_invoke:
         contract_properties += ContractPropertyState.HasDynamicInvoke
-
-    print("contract properties: %s " % contract_properties)
 
     script = None
 

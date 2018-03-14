@@ -1,4 +1,5 @@
 from unittest import TestCase
+from neo.VM.InteropService import *
 from neo.SmartContract.ContractParameter import ContractParameter
 from neo.SmartContract.ContractParameterType import ContractParameterType
 from neocore.UInt256 import UInt256
@@ -20,6 +21,36 @@ class EventTestCase(TestCase):
 
         self.assertEqual(cp.Type, ContractParameterType.String)
         self.assertEqual(cp.Value, 'hello')
+
+        # the following test ensures the type can be an int
+        jsn = {
+            'type': 7,
+            'value': 'hi'
+        }
+        cp = ContractParameter.FromJson(jsn)
+
+        self.assertEqual(cp.Type, ContractParameterType.String)
+        self.assertEqual(cp.Value, 'hi')
+
+        # the following test ensures the type can be a string containing an int
+        jsn = {
+            'type': '7',
+            'value': 'goodbye'
+        }
+        cp = ContractParameter.FromJson(jsn)
+
+        self.assertEqual(cp.Type, ContractParameterType.String)
+        self.assertEqual(cp.Value, 'goodbye')
+
+        # the following test ensures the type can be a string of the type literal
+        jsn = {
+            'type': 'String',
+            'value': 'bye'
+        }
+        cp = ContractParameter.FromJson(jsn)
+
+        self.assertEqual(cp.Type, ContractParameterType.String)
+        self.assertEqual(cp.Value, 'bye')
 
         jsn = {
             'type': str(ContractParameterType.Integer),
@@ -132,3 +163,65 @@ class EventTestCase(TestCase):
         self.assertIsInstance(cp.Value[2].Value, UInt256)
 
         self.assertEqual(cp.ToJson(), jsn)
+
+    def test_to_parameter(self):
+
+        stack_item = Integer(BigInteger(14))
+
+        cp1 = ContractParameter.AsParameterType(ContractParameterType.Integer, stack_item)
+        self.assertEqual(cp1.ToJson(), {'type': 'Integer', 'value': 14})
+
+        cp1 = ContractParameter.AsParameterType(ContractParameterType.Boolean, stack_item)
+        self.assertEqual(cp1.ToJson(), {'type': 'Boolean', 'value': True})
+
+        cp1 = ContractParameter.AsParameterType(ContractParameterType.ByteArray, stack_item)
+        self.assertEqual(cp1.ToJson(), {'type': 'ByteArray', 'value': '0e'})
+
+        with self.assertRaises(Exception) as ctx:
+            cp1 = ContractParameter.AsParameterType(ContractParameterType.Array, stack_item)
+
+        cp1 = ContractParameter.AsParameterType(ContractParameterType.String, stack_item)
+        self.assertEqual(cp1.ToJson(), {'type': 'String', 'value': '14'})
+
+        cp1 = ContractParameter.AsParameterType(ContractParameterType.InteropInterface, stack_item)
+        self.assertEqual(cp1.ToJson(), {'type': 'InteropInterface'})
+
+        stack_item = Boolean(False)
+
+        cp1 = ContractParameter.AsParameterType(ContractParameterType.Integer, stack_item)
+        self.assertEqual(cp1.ToJson(), {'type': 'Integer', 'value': 0})
+
+        cp1 = ContractParameter.AsParameterType(ContractParameterType.Boolean, stack_item)
+        self.assertEqual(cp1.ToJson(), {'type': 'Boolean', 'value': False})
+
+        cp1 = ContractParameter.AsParameterType(ContractParameterType.ByteArray, stack_item)
+        self.assertEqual(cp1.ToJson(), {'type': 'ByteArray', 'value': '00'})
+
+        with self.assertRaises(Exception) as ctx:
+            cp1 = ContractParameter.AsParameterType(ContractParameterType.Array, stack_item)
+
+        cp1 = ContractParameter.AsParameterType(ContractParameterType.String, stack_item)
+        self.assertEqual(cp1.ToJson(), {'type': 'String', 'value': 'False'})
+
+        cp1 = ContractParameter.AsParameterType(ContractParameterType.InteropInterface, stack_item)
+        self.assertEqual(cp1.ToJson(), {'type': 'InteropInterface'})
+
+        stack_item = ByteArray(bytearray(b'\xe0\x02'))
+
+        cp1 = ContractParameter.AsParameterType(ContractParameterType.Integer, stack_item)
+        self.assertEqual(cp1.ToJson(), {'type': 'Integer', 'value': 736})
+
+        cp1 = ContractParameter.AsParameterType(ContractParameterType.Boolean, stack_item)
+        self.assertEqual(cp1.ToJson(), {'type': 'Boolean', 'value': True})
+
+        cp1 = ContractParameter.AsParameterType(ContractParameterType.ByteArray, stack_item)
+        self.assertEqual(cp1.ToJson(), {'type': 'ByteArray', 'value': 'e002'})
+
+        with self.assertRaises(Exception) as ctx:
+            cp1 = ContractParameter.AsParameterType(ContractParameterType.Array, stack_item)
+
+        cp1 = ContractParameter.AsParameterType(ContractParameterType.String, stack_item)
+        self.assertEqual(cp1.ToJson(), {'type': 'String', 'value': 'e002'})
+
+        cp1 = ContractParameter.AsParameterType(ContractParameterType.InteropInterface, stack_item)
+        self.assertEqual(cp1.ToJson(), {'type': 'InteropInterface'})
